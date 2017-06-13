@@ -42,18 +42,23 @@ namespace Randy.Infrastructure
         public static RSAParameters GenerateAndSaveRSAKey(string filePath)
         {
             RSAParameters publicKeys, privateKeys;
-            using (var rsa = new System.Security.Cryptography.RSACryptoServiceProvider(2048))
-            {
-                try
-                {
-                    privateKeys = rsa.ExportParameters(true);
-                    publicKeys = rsa.ExportParameters(false);
-                }
-                finally
-                {
-                    rsa.PersistKeyInCsp = false;
-                }
-            }
+
+            var rsa= System.Security.Cryptography.RSA.Create();
+            privateKeys = rsa.ExportParameters(true);
+            publicKeys = rsa.ExportParameters(false);
+            //cannot cross platform
+            //using (var rsa = new System.Security.Cryptography.RSACryptoServiceProvider(2048))
+            //{
+            //    try
+            //    {
+            //        privateKeys = rsa.ExportParameters(true);
+            //        publicKeys = rsa.ExportParameters(false);
+            //    }
+            //    finally
+            //    {
+            //        rsa.PersistKeyInCsp = false;
+            //    }
+            //}
             File.WriteAllText(Path.Combine(filePath, "key.json"), JsonConvert.SerializeObject(privateKeys));
             File.WriteAllText(Path.Combine(filePath, "key.public.json"), JsonConvert.SerializeObject(publicKeys));
             return privateKeys;
